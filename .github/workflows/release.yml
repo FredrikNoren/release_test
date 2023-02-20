@@ -73,7 +73,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           xcrun altool --store-password-in-keychain-item testy_apple_developer -u ${{ secrets.APPLE_DEVELOPER_EMAIL }} -p ${{ secrets.APPLE_DEVELOPER_PASSWORD }} --sync
-          xcrun notarytool submit ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip --keychain-profile "testy_apple_developer" --wait
+          xcrun notarytool submit ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip --keychain-profile "signing_temp" --wait
           xcrun stapler staple ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip
       - name: Upload
         run: gh release upload ${{ needs.create-release.outputs.tag }} ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip
