@@ -50,9 +50,9 @@ jobs:
       # We don't do caching here because we only have 10gb and they'll be occupied by normal builds all the time anyway
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
-      - name: Codesign executable (OSX)
-        if: matrix.os == 'macos-latest'
-        run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --deep ${{ env.EXE_DIR }}/${{ matrix.exe_name }} -v
+      # - name: Codesign executable (OSX)
+      #   if: matrix.os == 'macos-latest'
+      #   run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --deep ${{ env.EXE_DIR }}/${{ matrix.exe_name }} -v
       - name: Bundle
         uses: thedoctor0/zip-release@0.7.1
         with:
