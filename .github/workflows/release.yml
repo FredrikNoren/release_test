@@ -41,6 +41,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       EXE_DIR: target/${{ matrix.target }}/release
+      EXE_PATH: target/${{ matrix.target }}/release/${{ matrix.exe_name }}
     steps:
       - uses: actions/checkout@v3
       - name: Install aarch64-apple-darwin
@@ -60,7 +61,12 @@ jobs:
           keychain-password: hello_world
       - name: Codesign executable (OSX)
         if: matrix.os == 'macos-latest'
-        run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --deep ${{ env.EXE_DIR }}/${{ matrix.exe_name }} -v
+        run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --deep ${{ env.EXE_PATH }} -v
+      - name: Notarize executable (OSX)
+        if: matrix.os == 'macos-latest'
+        run: |
+          xcrun altool --store-password-in-keychain-item testy_apple_developer -u ${{ secrets.APPLE_DEVELOPER_EMAIL }} -p ${{ secrets.APPLE_DEVELOPER_PASSWORD }} --sync
+          /opt/homebrew/bin/xcnotary notarize ${{ env.EXE_PATH }} --developer-account ${{ secrets.APPLE_DEVELOPER_EMAIL }} --developer-password-keychain-item testy_apple_developer
       - name: Bundle
         uses: thedoctor0/zip-release@0.7.1
         with:
