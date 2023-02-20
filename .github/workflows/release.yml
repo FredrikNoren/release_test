@@ -62,12 +62,6 @@ jobs:
       - name: Codesign executable (OSX)
         if: matrix.os == 'macos-latest'
         run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --deep ${{ env.EXE_PATH }} -v
-      - name: Notarize executable (OSX)
-        if: matrix.os == 'macos-latest'
-        run: |
-          xcrun altool --store-password-in-keychain-item testy_apple_developer -u ${{ secrets.APPLE_DEVELOPER_EMAIL }} -p ${{ secrets.APPLE_DEVELOPER_PASSWORD }} --sync
-          xcrun notarytool submit ${{ env.EXE_PATH }} --keychain-profile "testy_apple_developer" --wait
-          xcrun stapler staple ${{ env.EXE_PATH }}
       - name: Bundle
         uses: thedoctor0/zip-release@0.7.1
         with:
@@ -75,6 +69,12 @@ jobs:
           filename: ${{ matrix.target }}-ambient.zip
           directory: ${{ env.EXE_DIR }}
           path: ${{ matrix.exe_name }}
+      - name: Notarize executable (OSX)
+        if: matrix.os == 'macos-latest'
+        run: |
+          xcrun altool --store-password-in-keychain-item testy_apple_developer -u ${{ secrets.APPLE_DEVELOPER_EMAIL }} -p ${{ secrets.APPLE_DEVELOPER_PASSWORD }} --sync
+          xcrun notarytool submit ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip --keychain-profile "testy_apple_developer" --wait
+          xcrun stapler staple ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip
       - name: Upload
         run: gh release upload ${{ needs.create-release.outputs.tag }} ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip
 
