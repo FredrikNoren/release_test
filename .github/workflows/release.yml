@@ -52,16 +52,16 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }}
       - name: Codesign executable (OSX)
         if: matrix.os == 'macos-latest'
-        run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --deep ${{ env.exe_dir }}/${{ matrix.exe_name }} -v
+        run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --deep ${{ env.EXE_DIR }}/${{ matrix.exe_name }} -v
       - name: Bundle
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: "zip"
           filename: ${{ matrix.target }}-ambient.zip
-          directory: ${{ env.exe_dir }}
+          directory: ${{ env.EXE_DIR }}
           path: ${{ matrix.exe_name }}
       - name: Upload
-        run: gh release upload ${{ needs.create-release.outputs.tag }} ${{ env.exe_dir }}/${{ matrix.target }}-ambient.zip
+        run: gh release upload ${{ needs.create-release.outputs.tag }} ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip
 
   publish-release:
     needs: [create-release, build-app]
