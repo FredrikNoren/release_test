@@ -70,6 +70,7 @@ jobs:
           directory: ${{ env.EXE_DIR }}
           path: ${{ matrix.exe_name }}
       - uses: devbotsxyz/xcode-notarize@v1
+        if: matrix.os == 'macos-latest'
         with:
           product-path: "${{ matrix.target }}-ambient.zip"
           appstore-connect-username: ${{ secrets.APPLE_DEVELOPER_EMAIL }}
