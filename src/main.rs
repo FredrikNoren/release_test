@@ -1,7 +1,7 @@
 use self_update::cargo_crate_version;
 
 fn main() {
-    println!("Hello, world!");
+    println!("Hello, world {}!", cargo_crate_version!());
     if let Err(err) = update() {
         println!("Update failed: {:?}", err);
     }
