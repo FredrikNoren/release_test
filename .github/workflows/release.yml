@@ -69,13 +69,18 @@ jobs:
           filename: ${{ matrix.target }}-ambient.zip
           directory: ${{ env.EXE_DIR }}
           path: ${{ matrix.exe_name }}
-      - name: Notarize executable (OSX)
-        if: matrix.os == 'macos-latest'
-        run: |
-          cd ${{ env.EXE_DIR }}
-          xcrun notarytool store-credentials "my-notarytool-profile" --apple-id ${{ secrets.APPLE_DEVELOPER_EMAIL }} --password ${{ secrets.APPLE_DEVELOPER_PASSWORD }}
-          xcrun notarytool submit ${{ matrix.target }}-ambient.zip --keychain-profile "my-notarytool-profile" --wait
-          xcrun stapler staple ${{ matrix.exe_name }}
+      - uses: devbotsxyz/xcode-notarize@v1
+        with:
+          product-path: "${{ matrix.target }}-ambient.zip"
+          appstore-connect-username: ${{ secrets.APPLE_DEVELOPER_EMAIL }}
+          appstore-connect-password: ${{ secrets.APPLE_DEVELOPER_PASSWORD }}
+      # - name: Notarize executable (OSX)
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     cd ${{ env.EXE_DIR }}
+      #     xcrun notarytool store-credentials "my-notarytool-profile" --apple-id ${{ secrets.APPLE_DEVELOPER_EMAIL }} --password ${{ secrets.APPLE_DEVELOPER_PASSWORD }}
+      #     xcrun notarytool submit ${{ matrix.target }}-ambient.zip --keychain-profile "my-notarytool-profile" --wait
+      #     xcrun stapler staple ${{ matrix.exe_name }}
       - name: Upload
         run: gh release upload ${{ needs.create-release.outputs.tag }} ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip
 
