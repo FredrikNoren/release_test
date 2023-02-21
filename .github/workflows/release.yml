@@ -41,7 +41,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       EXE_DIR: target/${{ matrix.target }}/release
-      EXE_PATH: target/${{ matrix.target }}/release/${{ matrix.exe_name }}
+      EXE_PATH: ${{ env.EXE_DIR }}/${{ matrix.exe_name }}
     steps:
       - uses: actions/checkout@v3
       - name: Install aarch64-apple-darwin
