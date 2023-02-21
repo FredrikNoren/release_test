@@ -70,6 +70,7 @@ jobs:
           directory: ${{ env.EXE_DIR }}
           path: ${{ matrix.exe_name }}
       - name: "Notarize app bundle"
+        if: matrix.os == 'macos-latest'
         run: |
           cd ${{ env.EXE_DIR }}
           xcrun notarytool store-credentials "notarytool-profile" --apple-id "${{ secrets.APPLE_DEVELOPER_EMAIL }}" --password "${{ secrets.APPLE_DEVELOPER_PASSWORD }}"
