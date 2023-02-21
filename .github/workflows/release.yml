@@ -72,7 +72,7 @@ jobs:
       - uses: devbotsxyz/xcode-notarize@v1
         if: matrix.os == 'macos-latest'
         with:
-          product-path: "${{ matrix.target }}-ambient.zip"
+          product-path: "${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip"
           appstore-connect-username: ${{ secrets.APPLE_DEVELOPER_EMAIL }}
           appstore-connect-password: ${{ secrets.APPLE_DEVELOPER_PASSWORD }}
       # - name: Notarize executable (OSX)
