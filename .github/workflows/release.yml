@@ -57,8 +57,6 @@ jobs:
         with:
           p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
           p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-          create-keychain: true
-          keychain-password: hello_world
       - name: Codesign executable (OSX)
         if: matrix.os == 'macos-latest'
         run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --deep ${{ env.EXE_PATH }} -v
@@ -69,22 +67,12 @@ jobs:
           filename: ${{ matrix.target }}-ambient.zip
           directory: ${{ env.EXE_DIR }}
           path: ${{ matrix.exe_name }}
-      - name: "Notarize app bundle"
+      - name: Notarize app bundle (OSX)
         if: matrix.os == 'macos-latest'
         run: |
           cd ${{ env.EXE_DIR }}
           xcrun notarytool store-credentials "notarytool-profile" --apple-id "${{ secrets.APPLE_DEVELOPER_EMAIL }}" --team-id="${{ secrets.APPLE_TEAM_ID }}" --password "${{ secrets.APPLE_DEVELOPER_PASSWORD }}"
-
           xcrun notarytool submit "${{ matrix.target }}-ambient.zip" --keychain-profile "notarytool-profile" --wait
-
-      #    xcrun stapler staple "${{ matrix.exe_name }}"
-      # - name: Notarize executable (OSX)
-      #   if: matrix.os == 'macos-latest'
-      #   run: |
-      #     cd ${{ env.EXE_DIR }}
-      #     xcrun notarytool store-credentials "my-notarytool-profile" --apple-id ${{ secrets.APPLE_DEVELOPER_EMAIL }} --password ${{ secrets.APPLE_DEVELOPER_PASSWORD }}
-      #     xcrun notarytool submit ${{ matrix.target }}-ambient.zip --keychain-profile "my-notarytool-profile" --wait
-      #     xcrun stapler staple ${{ matrix.exe_name }}
       - name: Upload
         run: gh release upload ${{ needs.create-release.outputs.tag }} ${{ env.EXE_DIR }}/${{ matrix.target }}-ambient.zip
 
