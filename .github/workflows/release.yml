@@ -59,7 +59,7 @@ jobs:
           p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
       - name: Codesign executable (OSX)
         if: matrix.os == 'macos-latest'
-        run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --entitlements osx_entitlements --deep ${{ env.EXE_PATH }} -v
+        run: /usr/bin/codesign --force -s ${{ secrets.MAC_CODESIGN }} --options=runtime --entitlements osx_entitlements.xml --deep ${{ env.EXE_PATH }} -v
       - name: Bundle
         uses: thedoctor0/zip-release@0.7.1
         with:
